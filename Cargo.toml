@@ -1,6 +1,12 @@
 [package]
+categories = ["wasm", "container"]
+description = "A containerd shim implementation for the zwasm WebAssembly runtime."
+documentation = "https://docs.rs/containerd-shim-zwasm"
+edition = "2021"
+license = "MIT"
 name = "containerd-shim-zwasm"
+readme = "README.md"
+repository = "https://github.com/jtakakura/containerd-shim-zwasm"
 version = "0.1.0"
-edition = "2024"
 
 [dependencies]
