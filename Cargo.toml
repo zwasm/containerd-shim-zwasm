@@ -10,3 +10,21 @@ repository = "https://github.com/jtakakura/containerd-shim-zwasm"
 version = "0.1.0"
 
 [dependencies]
+anyhow = "1.0"
+containerd-shim-wasm = { version = "1.0.1", default-features = false, features = [
+    "opentelemetry",
+] }
+log = "0.4"
+tokio = { version = "1.45.1", default-features = false, features = ["signal"] }
+zwasm-sdk = "0.1.0"
+
+[[bin]]
+name = "containerd-shim-zwasm-v1"
+path = "src/main.rs"
+
+# `zwasm-sys` builds the zwasm C library with Zig from its build script, which
+# the docs.rs sandbox cannot run. Documentation has to be built locally with
+# `cargo doc` until that dependency builds on docs.rs.
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
