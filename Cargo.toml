@@ -18,6 +18,12 @@ log = "0.4"
 tokio = { version = "1.45.1", default-features = false, features = ["signal"] }
 zwasm-sdk = "0.1.0"
 
+[dev-dependencies]
+containerd-shim-wasm = { version = "1.0.1", default-features = false, features = [
+    "testing",
+] }
+serial_test = "3"
+
 [[bin]]
 name = "containerd-shim-zwasm-v1"
 path = "src/main.rs"
@@ -28,3 +34,14 @@ path = "src/main.rs"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+# The `testing` feature of `containerd-shim-wasm` 1.0.1 does not build against
+# the crates.io releases of its test support crates: `oci-tar-builder` 0.4.0
+# predates the `add_config` signature the shim calls, and the build script of
+# `containerd-shim-wasm-test-modules` 0.4.1 still targets `wasm32-wasi`, which
+# rustc no longer knows about. Both are taken from the runwasi commit the 1.0.1
+# release was cut from instead. This only affects builds of this workspace, not
+# consumers of the published crate.
+[patch.crates-io]
+containerd-shim-wasm-test-modules = { git = "https://github.com/containerd/runwasi", rev = "f1401719a3e981956ced9cd685abb2a49190bd1c" }
+oci-tar-builder = { git = "https://github.com/containerd/runwasi", rev = "f1401719a3e981956ced9cd685abb2a49190bd1c" }

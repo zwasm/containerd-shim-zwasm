@@ -30,3 +30,8 @@
 pub mod instance;
 
 pub use instance::{ZwasmSandbox, ZwasmShim};
+
+#[cfg(unix)]
+#[cfg(test)]
+#[path = "tests.rs"]
+mod zwasm_tests;

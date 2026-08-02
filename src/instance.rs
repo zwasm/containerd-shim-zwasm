@@ -148,3 +148,47 @@ impl Sandbox for ZwasmSandbox {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{sanitize_argv, sanitize_env};
+
+    #[test]
+    fn sanitize_argv_keeps_valid_arguments() {
+        assert_eq!(
+            sanitize_argv(&["/hello.wasm", "--verbose", ""]),
+            vec![
+                "/hello.wasm".to_string(),
+                "--verbose".to_string(),
+                String::new()
+            ]
+        );
+    }
+
+    #[test]
+    fn sanitize_argv_drops_arguments_with_interior_nul() {
+        assert_eq!(
+            sanitize_argv(&["ok", "bad\0arg", "also-ok"]),
+            vec!["ok".to_string(), "also-ok".to_string()]
+        );
+    }
+
+    #[test]
+    fn sanitize_env_keeps_valid_pairs() {
+        assert_eq!(
+            sanitize_env(&[("PATH", "/bin"), ("EMPTY", "")]),
+            vec![
+                ("PATH".to_string(), "/bin".to_string()),
+                ("EMPTY".to_string(), String::new()),
+            ]
+        );
+    }
+
+    #[test]
+    fn sanitize_env_drops_pairs_with_interior_nul() {
+        assert_eq!(
+            sanitize_env(&[("BAD\0KEY", "value"), ("KEY", "bad\0value"), ("OK", "1")]),
+            vec![("OK".to_string(), "1".to_string())]
+        );
+    }
+}
