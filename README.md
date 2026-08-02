@@ -88,6 +88,31 @@ The container's arguments, environment variables and root directory are exposed
 to the module through WASI. When containerd stops the container, the shim
 cancels the running invocation on `SIGTERM`/`SIGINT` and reports exit code 143.
 
+## Known limitations
+
+The shim can only expose what the zwasm C API offers, and the current API leaves
+three gaps. All of them need a fix in [zwasm](https://github.com/clojurewasm/zwasm)
+itself — the runtime supports these features, they are simply not reachable
+through `zwasm.h`.
+
+- **Exit codes are not propagated.** `proc_exit` surfaces as a generic trap and
+  the exit code recorded by the runtime (`getWasiExitCode`) has no C API. Any
+  module that exits with a non-zero code is reported as exit code 1.
+- **Guests cannot access the filesystem.** WASI capabilities default to stdio,
+  clock, random and `proc_exit`; there is no C API to grant the read, write and
+  path capabilities, so every path operation fails with `EACCES` even for
+  preopened directories.
+- **Passing arguments aborts the runtime.** A guest that reads its arguments
+  crashes the process when argv is non-empty, because the C API reinterprets its
+  array of argument pointers as an array of slices.
+
+All three are still present in v1.11.1, the last release of the zwasm v1 line
+that `zwasm-sdk` builds against; the line ended when the runtime was restarted
+from scratch for v2. Lifting these limitations therefore means following
+`zwasm-sdk` onto the redesigned v2 C API rather than waiting for a v1 fix.
+
+The integration tests covering the first two are marked `#[ignore]`.
+
 ## Testing
 
 Unit tests need no special privileges:
@@ -102,6 +127,8 @@ against it, which requires root:
 ```bash
 sudo -E "$(command -v cargo)" test
 ```
+
+Add `-- --ignored` to run the tests for the limitations listed above.
 
 ## Documentation
 
