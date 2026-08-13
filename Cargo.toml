@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT"
 name = "containerd-shim-zwasm"
 readme = "README.md"
-repository = "https://github.com/jtakakura/containerd-shim-zwasm"
+repository = "https://github.com/zwasm/containerd-shim-zwasm"
 version = "0.1.0"
 
 [dependencies]
