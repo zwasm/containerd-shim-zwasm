@@ -24,7 +24,7 @@
 //! the shim with containerd.
 //!
 //! [containerd]: https://containerd.io
-//! [zwasm]: https://github.com/clojurewasm/zwasm
+//! [zwasm]: https://github.com/zwasm/zwasm
 //! [Zig]: https://ziglang.org
 
 pub mod instance;

@@ -1,7 +1,7 @@
 # containerd-shim-zwasm
 
 A [containerd](https://containerd.io) shim that runs WebAssembly containers on
-the [zwasm](https://github.com/clojurewasm/zwasm) runtime.
+the [zwasm](https://github.com/zwasm/zwasm) runtime.
 
 The shim is built on [runwasi](https://github.com/containerd/runwasi)'s
 `containerd-shim-wasm` and executes a container's WebAssembly module through
@@ -91,7 +91,7 @@ cancels the running invocation on `SIGTERM`/`SIGINT` and reports exit code 143.
 ## Known limitations
 
 The shim can only expose what the zwasm C API offers, and the current API leaves
-three gaps. All of them need a fix in [zwasm](https://github.com/clojurewasm/zwasm)
+three gaps. All of them need a fix in [zwasm](https://github.com/zwasm/zwasm)
 itself — the runtime supports these features, they are simply not reachable
 through `zwasm.h`.
 
