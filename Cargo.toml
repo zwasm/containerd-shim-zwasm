@@ -28,9 +28,6 @@ serial_test = "3"
 name = "containerd-shim-zwasm-v1"
 path = "src/main.rs"
 
-# `zwasm-sys` builds the zwasm C library with Zig from its build script, which
-# the docs.rs sandbox cannot run. Documentation has to be built locally with
-# `cargo doc` until that dependency builds on docs.rs.
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

@@ -136,9 +136,7 @@ Add `-- --ignored` to run the tests for the limitations listed above.
 cargo doc --open
 ```
 
-Documentation has to be built locally for now: docs.rs cannot build this crate
-because the transitive `zwasm-sys` dependency invokes Zig from its build script,
-which is not available in the docs.rs sandbox.
+The crate is not published yet, so the documentation has to be built locally.
 
 ## Verifying on kind
 
