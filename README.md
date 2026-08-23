@@ -138,13 +138,6 @@ cargo doc --open
 
 The crate is not published yet, so the documentation has to be built locally.
 
-## Verifying on kind
-
-The Dockerfiles and scripts used to build the shim for a
-[kind](https://kind.sigs.k8s.io/) cluster and install it into the control plane
-node are maintained in a separate repository,
-[containerd-shim-zwasm-kind](https://github.com/jtakakura/containerd-shim-zwasm-kind).
-
 ## License
 
 Licensed under the [MIT License](LICENSE).
