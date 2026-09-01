@@ -80,8 +80,6 @@ fn test_unreachable() -> anyhow::Result<()> {
 
 #[test]
 #[serial]
-#[ignore = "the zwasm C API does not expose the WASI exit code, so the shim reports 1 for any \
-            module that calls proc_exit; see the known limitations in the README"]
 fn test_exit_code() -> anyhow::Result<()> {
     let (exit_code, _, _) = WasiTest::<WasiEngine>::builder()?
         .with_wasm(EXIT_CODE)?
@@ -111,8 +109,6 @@ fn test_seccomp() -> anyhow::Result<()> {
 
 #[test]
 #[serial]
-#[ignore = "the zwasm C API cannot grant WASI filesystem capabilities, so every path operation \
-            fails with EACCES; see the known limitations in the README"]
 fn test_has_default_devices() -> anyhow::Result<()> {
     let (exit_code, _, _) = WasiTest::<WasiEngine>::builder()?
         .with_wasm(HAS_DEFAULT_DEVICES)?

@@ -246,7 +246,7 @@ dependencies = [
  "bitflags 2.13.1",
  "cexpr",
  "clang-sys",
- "itertools 0.10.5",
+ "itertools 0.12.1",
  "proc-macro2",
  "quote",
  "regex",
@@ -572,13 +572,12 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-zwasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "containerd-shim-wasm",
  "log",
  "serial_test",
- "tokio",
  "zwasm-sdk",
 ]
 
@@ -4764,9 +4763,9 @@ checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[package]]
 name = "zwasm-sdk"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1e3a95d4ba8af1143936f827f83b5ed9e19c7cda44befaf0894b8a7f93b012c"
+checksum = "f203a050993da3857f8abdb6be8efd9d54af4cfe1a5513e2ab48d5461ea60ed0"
 dependencies = [
  "thiserror 2.0.19",
  "zwasm-sys",
@@ -4774,9 +4773,9 @@ dependencies = [
 
 [[package]]
 name = "zwasm-sys"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afc7c42c8bed745a1d08c21c1312c7447a94d191288bc7353e3fb603ae43c9e8"
+checksum = "0e9e38ac145f2ba14d72b126de36a362e390c2420e2b368757aa63dda9f536cd"
 dependencies = [
  "bindgen",
 ]

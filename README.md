@@ -12,8 +12,9 @@ the `io.containerd.zwasm.v1` runtime.
 
 - Linux (x86_64 or aarch64)
 - containerd 2.x with the CRI plugin, if you want to use it from Kubernetes
-- [Zig](https://ziglang.org/) 0.16.0 or later in `PATH` — the `zwasm-sys` build
-  script compiles the zwasm C library from source
+- [Zig](https://ziglang.org/) 0.16.0 or later in `PATH` to build — the
+  `zwasm-sys` build script compiles the zwasm C library from source. Zig is not
+  needed on the node that runs the shim
 - A recent stable Rust toolchain (Rust 2021 edition)
 
 ## Build
@@ -22,24 +23,16 @@ the `io.containerd.zwasm.v1` runtime.
 cargo build --release
 ```
 
-This produces two artifacts that have to be deployed together:
-
-| Artifact | Location |
-|----------|----------|
-| `containerd-shim-zwasm-v1` | `target/release/` |
-| `libzwasm.so` | `target/release/build/zwasm-sys-*/out/zig-install/lib/` |
-
-The shim links against `libzwasm.so` dynamically and the binary carries no
-`RUNPATH`, so the library must be reachable by the dynamic loader on the node.
+This produces a single artifact, `target/release/containerd-shim-zwasm-v1`. The
+zwasm C library is linked statically, so nothing else has to be present on the
+node.
 
 ## Install
 
-Copy both artifacts onto the node and register the runtime with containerd:
+Copy the binary onto the node and register the runtime with containerd:
 
 ```bash
 install -m 0755 target/release/containerd-shim-zwasm-v1 /usr/local/bin/
-install -m 0644 "$(find target/release -path '*/zig-install/lib/libzwasm.so' | head -n 1)" /usr/lib/
-ldconfig
 ```
 
 Add the runtime to `/etc/containerd/config.toml`:
@@ -85,33 +78,15 @@ spec:
 ```
 
 The container's arguments, environment variables and root directory are exposed
-to the module through WASI. When containerd stops the container, the shim
-cancels the running invocation on `SIGTERM`/`SIGINT` and reports exit code 143.
+to the module through WASI.
 
-## Known limitations
+The module's exit code becomes the container's: a guest that calls `exit(3)`
+gives a container that exited 3, and one that traps exits 1.
 
-The shim can only expose what the zwasm C API offers, and the current API leaves
-three gaps. All of them need a fix in [zwasm](https://github.com/zwasm/zwasm)
-itself — the runtime supports these features, they are simply not reachable
-through `zwasm.h`.
-
-- **Exit codes are not propagated.** `proc_exit` surfaces as a generic trap and
-  the exit code recorded by the runtime (`getWasiExitCode`) has no C API. Any
-  module that exits with a non-zero code is reported as exit code 1.
-- **Guests cannot access the filesystem.** WASI capabilities default to stdio,
-  clock, random and `proc_exit`; there is no C API to grant the read, write and
-  path capabilities, so every path operation fails with `EACCES` even for
-  preopened directories.
-- **Passing arguments aborts the runtime.** A guest that reads its arguments
-  crashes the process when argv is non-empty, because the C API reinterprets its
-  array of argument pointers as an array of slices.
-
-All three are still present in v1.11.1, the last release of the zwasm v1 line
-that `zwasm-sdk` builds against; the line ended when the runtime was restarted
-from scratch for v2. Lifting these limitations therefore means following
-`zwasm-sdk` onto the redesigned v2 C API rather than waiting for a v1 fix.
-
-The integration tests covering the first two are marked `#[ignore]`.
+The shim does not interrupt a running module on `SIGTERM`, matching every core
+module path in [runwasi](https://github.com/containerd/runwasi)'s own shims. A
+container that does not return on its own is stopped by containerd's `SIGKILL`
+once the termination grace period expires.
 
 ## Testing
 
