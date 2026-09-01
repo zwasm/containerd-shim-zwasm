@@ -29,6 +29,14 @@ All notable changes to this project will be documented in this file.
   that skips `argv[0]` to read its arguments no longer loses the first one. The
   v1 line aborted on any non-empty argv, so no working behaviour changed here
 
+## [0.1.1] - 2026-08-23
+### Changed
+- Dropped the section describing how to verify the shim on a kind cluster. It
+  pointed at Dockerfiles and scripts kept in a separate repository, none of
+  which this crate builds, tests or installs
+
+No code changed, so the shim binary is identical to 0.1.0.
+
 ## [0.1.0] - 2026-08-13
 ### Added
 - `ZwasmShim`, a `containerd-shim-wasm` shim that runs a container's
