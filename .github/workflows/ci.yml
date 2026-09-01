@@ -26,8 +26,11 @@ jobs:
         with:
           version: 0.16.0
 
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      # protoc: containerd-client generates its gRPC bindings at build time.
+      # libseccomp: the only non-libc library the shim links, pulled in by
+      # libcontainer through containerd-shim-wasm.
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler libseccomp-dev
 
       - name: cargo fmt
         run: cargo fmt --all -- --check
@@ -66,8 +69,11 @@ jobs:
         with:
           version: 0.16.0
 
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      # protoc: containerd-client generates its gRPC bindings at build time.
+      # libseccomp: the only non-libc library the shim links, pulled in by
+      # libcontainer through containerd-shim-wasm.
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler libseccomp-dev
 
       # Build unprivileged so the compile artifacts stay owned by the runner
       # user and the cache can pick them up.

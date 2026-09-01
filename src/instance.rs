@@ -1,6 +1,6 @@
 //! The shim and sandbox implementations that run WebAssembly modules on zwasm.
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use containerd_shim_wasm::sandbox::context::{Entrypoint, RuntimeContext};
 use containerd_shim_wasm::sandbox::Sandbox;
 use containerd_shim_wasm::shim::{version, Shim, Version};
@@ -104,15 +104,11 @@ impl Sandbox for ZwasmSandbox {
         let wasm_bytes = source.as_bytes()?;
         let mut store = Store::new(&self.engine)?;
         store.set_wasi(wasi_config);
-        let module = Module::new(&mut store, &wasm_bytes)?;
-        let instance = Instance::new(&mut store, &module, &[])?;
-        let entry = instance
-            .get_func(&mut store, &func)
-            .with_context(|| format!("module does not export an entrypoint named {func:?}"))?;
-        let mut results = vec![Val::I32(0); entry.result_arity(&store)];
-        let result = entry.call(&mut store, &[], &mut results);
 
-        match result {
+        // Everything a guest can fail at happens inside `execute`, so the
+        // status it ends with is read in one place. `Instance::new` runs the
+        // module's start section, which is a guest ending too.
+        match execute(&mut store, &wasm_bytes, &func) {
             Ok(()) => {
                 log::info!("wasm execution succeeded");
                 Ok(0)
@@ -127,6 +123,21 @@ impl Sandbox for ZwasmSandbox {
             }
         }
     }
+}
+
+/// Instantiates `wasm_bytes` on `store` and calls `func`.
+///
+/// Every failure here is the guest's, so they share one return type and the
+/// caller maps them to an exit code together. Returning them as `anyhow::Error`
+/// instead would make containerd report 137, a kill the guest never received.
+fn execute(store: &mut Store, wasm_bytes: &[u8], func: &str) -> Result<(), Error> {
+    let module = Module::new(store, wasm_bytes)?;
+    let instance = Instance::new(store, &module, &[])?;
+    let entry = instance
+        .get_func(store, func)
+        .ok_or_else(|| Error::Message(format!("no entrypoint named {func:?}")))?;
+    let mut results = vec![Val::I32(0); entry.result_arity(store)];
+    entry.call(store, &[], &mut results)
 }
 
 #[cfg(test)]
