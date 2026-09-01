@@ -12,7 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # `containerd-shim-wasm-test-modules` builds its fixtures for
+      # wasm32-wasip1 in a build script, so the target has to be installed even
+      # though nothing in this crate targets wasm.
       - uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable
+        with:
+          targets: wasm32-wasip1
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
@@ -20,6 +25,9 @@ jobs:
         uses: goto-bus-stop/setup-zig@abea47f85e598557f500fa1fd2ab7464fcb39406 # v2.2.1
         with:
           version: 0.16.0
+
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
       - name: cargo fmt
         run: cargo fmt --all -- --check
@@ -44,7 +52,12 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # `containerd-shim-wasm-test-modules` builds its fixtures for
+      # wasm32-wasip1 in a build script, so the target has to be installed even
+      # though nothing in this crate targets wasm.
       - uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable
+        with:
+          targets: wasm32-wasip1
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
@@ -52,6 +65,9 @@ jobs:
         uses: goto-bus-stop/setup-zig@abea47f85e598557f500fa1fd2ab7464fcb39406 # v2.2.1
         with:
           version: 0.16.0
+
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
       # Build unprivileged so the compile artifacts stay owned by the runner
       # user and the cache can pick them up.
