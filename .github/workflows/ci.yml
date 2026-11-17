@@ -78,12 +78,18 @@ jobs:
       # Build unprivileged so the compile artifacts stay owned by the runner
       # user and the cache can pick them up.
       - name: Build tests
-        run: cargo build --tests
+        run: cargo test --lib --no-run
 
       # `WasiTest` creates an OCI bundle and runs the shim against it, which
-      # needs root. `-E` keeps the toolchain environment that rustup set up.
+      # needs root. Only the test binary runs as root, so root needs no
+      # toolchain: `sudo cargo` finds no rustup default without the caller's
+      # environment, and the sudo on ubuntu-26.04 does not support `-E`.
       - name: Integration tests
-        run: sudo -E "$(command -v cargo)" test --lib
+        run: |
+          set -euo pipefail
+          bin=$(cargo test --lib --no-run --message-format=json \
+            | jq -r 'select(.profile.test == true) | .executable')
+          sudo "$bin"
 
   # No cross-compilation job yet. This crate takes zwasm-sdk from crates.io, and
   # the build script that compiles the zwasm C library only ever builds it for
