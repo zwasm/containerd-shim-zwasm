@@ -43,9 +43,7 @@ pub struct ZwasmShim;
 
 /// The sandbox that executes a container's WebAssembly module on zwasm.
 #[derive(Default)]
-pub struct ZwasmSandbox {
-    engine: Engine,
-}
+pub struct ZwasmSandbox;
 
 impl Shim for ZwasmShim {
     type Sandbox = ZwasmSandbox;
@@ -102,7 +100,8 @@ impl Sandbox for ZwasmSandbox {
         wasi_config.preopen_dir("/", "/")?;
 
         let wasm_bytes = source.as_bytes()?;
-        let mut store = Store::new(&self.engine)?;
+        let engine = Engine::new()?;
+        let mut store = Store::new(&engine)?;
         store.set_wasi(wasi_config);
 
         // Everything a guest can fail at happens inside `execute`, so the

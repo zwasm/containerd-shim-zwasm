@@ -12,9 +12,10 @@ the `io.containerd.zwasm.v1` runtime.
 
 - Linux (x86_64 or aarch64)
 - containerd 2.x with the CRI plugin, if you want to use it from Kubernetes
-- [Zig](https://ziglang.org/) 0.16.0 or later in `PATH` to build — the
-  `zwasm-sys` build script compiles the zwasm C library from source. Zig is not
-  needed on the node that runs the shim
+- [Zig](https://ziglang.org/) 0.17.1 in `PATH` to build — the `zwasm-sys` build
+  script compiles the zwasm C library from source. zwasm pins one Zig minor
+  exactly, so another minor fails inside its `build.zig`. Zig is not needed on
+  the node that runs the shim
 - A recent stable Rust toolchain (Rust 2021 edition)
 
 ## Build
@@ -78,7 +79,8 @@ spec:
 ```
 
 The container's arguments, environment variables and root directory are exposed
-to the module through WASI.
+to the module through WASI. A path that leaves the preopened root is refused,
+and so is a symlink whose target starts with `/`, even one resolving inside it.
 
 The module's exit code becomes the container's: a guest that calls `exit(3)`
 gives a container that exited 3, and one that traps exits 1.
