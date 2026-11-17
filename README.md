@@ -97,13 +97,12 @@ cargo test --lib instance::tests
 ```
 
 The integration tests in `src/tests.rs` build an OCI bundle and run the shim
-against it, which requires root:
+against it, which requires root. Build them as yourself and run only the test
+binary as root, so root needs no Rust toolchain:
 
 ```bash
-sudo -E "$(command -v cargo)" test
+sudo "$(cargo test --lib --no-run --message-format=json | jq -r 'select(.profile.test == true) | .executable')"
 ```
-
-Add `-- --ignored` to run the tests for the limitations listed above.
 
 ## Documentation
 
