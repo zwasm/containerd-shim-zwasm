@@ -20,8 +20,9 @@
 //! # Requirements
 //!
 //! Building this crate compiles the zwasm C library from source, which requires
-//! [Zig] 0.16.0 or later in `PATH`. See the crate's README for how to register
-//! the shim with containerd.
+//! [Zig] 0.17.1 in `PATH`. zwasm pins one Zig minor exactly, so another minor
+//! fails inside its `build.zig`. See the crate's README for how to register the
+//! shim with containerd.
 //!
 //! [containerd]: https://containerd.io
 //! [zwasm]: https://github.com/zwasm/zwasm

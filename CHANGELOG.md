@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-11-17
+### Security
+- Moved from zwasm 2.6.x to 2.12.0. A module's bytes alone could make the JIT,
+  which runs a guest by default, read or write outside the GC heap
+  (GHSA-4p74-j99r-p339, GHSA-rg2g-8x8j-3pm9, both high), or end the shim's
+  process instead of trapping (GHSA-3983-xv7h-r8vx, GHSA-fv27-pjx7-p4m3, both
+  medium). Two more end the process on the interpreter, which the default engine
+  uses for a module the JIT declines (GHSA-xcf3-8ww5-fwxh, GHSA-ph9p-gw3q-7chp).
+  The rest of zwasm's advisory list needs components, WASI 0.2 or 0.3, or
+  `zwasm compile`, none of which this shim uses
+- GHSA-vh35-jrc2-qj4q, a symlink escape from a preopen, did not reach outside
+  the container here, since the shim's preopen is the container's own root. Its
+  fix is the symlink change below
+
+### Changed
+- **A symlink whose target starts with `/` is no longer followed**, even when it
+  resolves inside the preopen: reading through one fails with `notcapable`. A
+  guest that reaches a file in its image through an absolute symlink stops
+  working
+- A module whose GC constant expression, element segment item or reference
+  operand has the wrong type is rejected by validation, so one that loaded
+  before now fails at module creation. This is the fix for GHSA-rg2g-8x8j-3pm9
+  and GHSA-fv27-pjx7-p4m3
+- Building needs Zig 0.17.1. zwasm pins one Zig minor exactly, so another fails
+  inside its `build.zig`
+
 ## [0.2.0] - 2026-09-01
 ### Changed
 - **Breaking for operators.** Moved to the zwasm 2.x C API through zwasm-sdk
