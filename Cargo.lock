@@ -572,7 +572,7 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-zwasm"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "containerd-shim-wasm",
@@ -4764,9 +4764,9 @@ checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[package]]
 name = "zwasm-sdk"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d56c25d741b666039eef1e6749df201fa3a6f05aa327aba848566ff22ceecf2e"
+checksum = "b2971a186df46fb57847d9074b263cf2c92e854fb44dbd3b77cb1fdffa2d0d1a"
 dependencies = [
  "thiserror 2.0.19",
  "zwasm-sys",
@@ -4774,9 +4774,9 @@ dependencies = [
 
 [[package]]
 name = "zwasm-sys"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2012b0550eb62af82386eb2c2dcf4b265875ce9790b0123498000cffc6c728c0"
+checksum = "cd974d3be370daf5cc7aa99f1076e5d980706aac9e05164da01eb0cdb3aaf215"
 dependencies = [
  "bindgen",
 ]
