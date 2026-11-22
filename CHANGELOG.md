@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2026-11-22
+### Security
+- Moved to zwasm 2.12.1 through zwasm-sdk 0.8.1. On the JIT, which runs a guest
+  by default, a valid module could take an `if`'s result from a value below it
+  (GHSA-grpg-98rp-93g7, high), lose a value at a merge (GHSA-4wxj-2fwr-xxwq),
+  end the shim's process while it was compiled (GHSA-pxpg-mx84-x9c9), catch a
+  `throw_ref` of null that has to trap (GHSA-wwr2-84fx-2j37), or run on with a
+  null reference after a GC allocation past the heap's cap, which now traps
+  (GHSA-pjxf-4q9v-jpwq). On arm64, a function over about 1 MiB of machine code
+  could end the process (GHSA-9v38-4fvh-wjp6). GHSA-493c-fvh2-2pv7 is Apple
+  arm64 only and does not reach this shim
+
+### Changed
+- The JIT declines some modules it compiled before: one that uses `array.new`
+  on an array of `v128` elements, and on arm64, one whose code is too far apart
+  for a branch or a literal load, such as a function over about 1 MiB of
+  machine code. The default engine runs such a module on the interpreter, unless
+  the interpreter cannot run it either (it does not run `v128.const`, for one):
+  then the container exits 1 without running the guest
+
+### Fixed
+- Three fixes without an advisory. On the JIT, an `if` with no else whose then
+  arm branches to its own label gave the wrong values when the condition was
+  zero. On both engines, a `try_table` catch clause whose label is the
+  function's own did not return its values. On the arm64 JIT, `br_on_null` to a
+  loop with no params was never taken, since this shim sets no fuel
+
 ## [0.3.0] - 2026-11-17
 ### Security
 - Moved from zwasm 2.6.x to 2.12.0. A module's bytes alone could make the JIT,
