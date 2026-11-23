@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.1] - 2026-11-22
+## [0.3.1] - 2026-11-23
 ### Security
 - Moved to zwasm 2.12.1 through zwasm-sdk 0.8.1. On the JIT, which runs a guest
   by default, a valid module could take an `if`'s result from a value below it
